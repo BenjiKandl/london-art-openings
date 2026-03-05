@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>London Art Openings</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Helvetica+Neue:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0e0e0e;
+  --paper: #f4f1eb;
+  --mid: #9a9488;
+  --rule: #ddd8ce;
+  --tag-bg: #eae6de;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+html, body { height: 100%; background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; font-size: 13px; -webkit-font-smoothing: antialiased; }
+
+/* ── LAYOUT ── */
+.app { display: grid; grid-template-rows: auto 1fr; height: 100vh; overflow: hidden; }
+
+header {
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wordmark { font-family: var(--serif); font-size: 21px; font-weight: 300; font-style: italic; letter-spacing: -0.01em; }
+.wordmark em { font-style: normal; font-weight: 400; }
+
+.header-right { display: flex; align-items: center; gap: 20px; }
+
+.week-label { font-size: 10px; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.signup-btn {
+  padding: 7px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: opacity 0.15s;
+}
+.signup-btn:hover { opacity: 0.75; }
+
+.main { display: grid; grid-template-columns: 260px 1fr; overflow: hidden; }
+
+/* ── LEFT PANEL ── */
+.left-panel { border-right: 1px solid var(--rule); display: flex; flex-direction: column; overflow-y: auto; }
+
+.panel-section { padding: 20px 22px 18px; border-bottom: 1px solid var(--rule); }
+
+.panel-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; }
+
+/* ── MAP ── */
+.map-wrap { display: flex; justify-content: center; }
+
+.zone-btn { cursor: pointer; }
+.zone-btn .z-shape { transition: fill 0.18s; }
+.zone-btn:hover .z-shape { opacity: 0.7; }
+.zone-btn.active .z-shape { fill: var(--ink) !important; }
+.zone-btn.active .z-label { fill: var(--paper) !important; }
+.z-label { font-family: var(--sans); font-size: 8.5px; letter-spacing: 0.09em; text-transform: uppercase; fill: var(--ink); pointer-events: none; transition: fill 0.18s; }
+
+.map-hint { text-align: center; margin-top: 10px; font-size: 10px; color: var(--mid); }
+
+/* ── DAY BUTTONS ── */
+.day-list { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+
+.day-btn {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 10px; border-radius: 2px; cursor: pointer;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: var(--sans); font-size: 12px; font-weight: 300;
+  color: var(--ink); letter-spacing: 0.01em; transition: background 0.1s;
+}
+.day-btn:hover { background: var(--tag-bg); }
+.day-btn.active { background: var(--ink); color: var(--paper); }
+.day-count { font-size: 10px; color: var(--mid); }
+.day-btn.active .day-count { color: rgba(244,241,235,0.45); }
+
+/* ── RIGHT PANEL ── */
+.right-panel { overflow-y: auto; }
+
+.filter-bar {
+  padding: 13px 32px;
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; background: var(--paper); z-index: 5;
+}
+
+.result-count { font-size: 11px; color: var(--mid); }
+
+.view-toggle { margin-left: auto; display: flex; }
+
+.view-btn {
+  padding: 5px 14px; font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase; border: 1px solid var(--rule);
+  background: none; color: var(--mid); cursor: pointer;
+  font-family: var(--sans); transition: all 0.12s;
+}
+.view-btn:first-child { border-radius: 2px 0 0 2px; }
+.view-btn:last-child { border-radius: 0 2px 2px 0; margin-left: -1px; }
+.view-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* ── LIST VIEW ── */
+#listView { padding: 0 32px 48px; }
+
+.day-group { margin-top: 32px; }
+
+.day-group-header {
+  display: flex; align-items: baseline; gap: 12px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--rule); margin-bottom: 4px;
+}
+
+.dg-name { font-family: var(--serif); font-size: 22px; font-weight: 300; font-style: italic; }
+.dg-date { font-size: 10px; color: var(--mid); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.opening-card {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: opacity 0.12s;
+}
+.opening-card:hover { opacity: 0.6; cursor: pointer; }
+
+.card-time { font-size: 11px; color: var(--mid); padding-top: 2px; line-height: 1.5; }
+.card-time strong { display: block; color: var(--ink); font-weight: 400; font-size: 12px; }
+
+.card-gallery { font-size: 13px; font-weight: 400; margin-bottom: 3px; }
+.card-artist { font-family: var(--serif); font-size: 16px; font-style: italic; font-weight: 300; margin-bottom: 5px; line-height: 1.3; }
+.card-show { font-size: 11px; color: var(--mid); margin-bottom: 6px; }
+
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+.zone-tag {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--mid); background: var(--tag-bg);
+  padding: 2px 7px; border-radius: 2px;
+}
+
+.preview-tag {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--paper); background: var(--ink);
+  padding: 2px 7px; border-radius: 2px;
+}
+
+.card-address { font-size: 11px; color: var(--mid); }
+
+/* ── WEEK VIEW ── */
+#weekView { display: none; padding: 24px 32px 48px; }
+#weekView.active { display: grid; grid-template-columns: repeat(6,1fr); gap: 14px; }
+
+.wk-col { border-top: 2px solid var(--rule); padding-top: 12px; }
+.wk-col.has-items { border-top-color: var(--ink); }
+.wk-day-name { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+.wk-col.has-items .wk-day-name { color: var(--ink); }
+
+.wk-item { padding: 7px 8px; border-radius: 2px; margin-bottom: 6px; cursor: pointer; transition: background 0.1s; }
+.wk-item:hover { background: var(--tag-bg); }
+.wk-gallery { font-size: 11px; font-weight: 400; }
+.wk-artist { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--mid); line-height: 1.3; }
+.wk-time { font-size: 10px; color: var(--mid); margin-top: 3px; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 80px; color: var(--mid); font-family: var(--serif); font-style: italic; font-size: 20px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(14,14,14,0.55); z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--paper); width: 400px; max-width: 92vw;
+  border: 1px solid var(--rule); border-radius: 3px;
+  padding: 40px 36px 36px;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+.modal-title { font-family: var(--serif); font-size: 26px; font-style: italic; font-weight: 300; margin-bottom: 6px; }
+.modal-sub { font-size: 11px; color: var(--mid); line-height: 1.6; margin-bottom: 28px; }
+
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 7px; }
+
+.field input, .field select {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--rule); border-radius: 2px;
+  background: #fff; font-family: var(--sans); font-size: 13px;
+  font-weight: 300; color: var(--ink); outline: none;
+  transition: border-color 0.15s; appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--ink); }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; align-items: center; }
+
+.submit-btn {
+  flex: 1; padding: 11px;
+  background: var(--ink); color: var(--paper);
+  border: none; font-family: var(--sans); font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  cursor: pointer; border-radius: 2px; transition: opacity 0.15s;
+}
+.submit-btn:hover { opacity: 0.75; }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.cancel-btn {
+  padding: 11px 16px; background: none; color: var(--mid);
+  border: 1px solid var(--rule); font-family: var(--sans);
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; border-radius: 2px;
+}
+
+.modal-msg { font-size: 11px; color: var(--mid); margin-top: 12px; min-height: 16px; }
+.modal-msg.success { color: #2a6e3f; }
+.modal-msg.error { color: #8b2020; }
+
+/* ── SUCCESS STATE ── */
+.success-state { display: none; text-align: center; padding: 20px 0; }
+.success-state.show { display: block; }
+.success-icon { font-size: 32px; margin-bottom: 16px; }
+.success-title { font-family: var(--serif); font-size: 24px; font-style: italic; margin-bottom: 8px; }
+.success-copy { font-size: 12px; color: var(--mid); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="wordmark"><em>London</em> Art Openings</div>
+    <div class="header-right">
+      <span class="week-label" id="weekLabel"></span>
+      <button class="signup-btn" onclick="openModal()">Get Early Access</button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+      <!-- MAP -->
+      <div class="panel-section">
+        <div class="panel-label">Area</div>
+        <div class="map-wrap">
+          <svg width="196" height="196" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- NORTH -->
+            <g class="zone-btn" data-zone="north" onclick="toggleZone(this)">
+              <path class="z-shape" d="M66 14 L130 14 L142 38 L118 54 L78 54 L54 38 Z" fill="#e4e0d8"/>
+              <text class="z-label" x="98" y="37" text-anchor="middle">North</text>
+            </g>
+
+            <!-- WEST -->
+            <g class="zone-btn" data-zone="west" onclick="toggleZone(this)">
+              <path class="z-shape" d="M14 66 L38 54 L54 78 L54 118 L38 142 L14 130 Z" fill="#e4e0d8"/>
+              <text class="z-label" x="32" y="100" text-anchor="middle">West</text>
+            </g>
+
+            <!-- CENTRAL -->
+            <g class="zone-btn" data-zone="central" onclick="toggleZone(this)">
+              <path class="z-shape" d="M78 54 L118 54 L132 68 L132 128 L118 142 L78 142 L64 128 L64 68 Z" fill="#d6d1c8"/>
+              <text class="z-label" x="98" y="100" text-anchor="middle">Central</text>
+            </g>
+
+            <!-- EAST -->
+            <g class="zone-btn" data-zone="east" onclick="toggleZone(this)">
+              <path class="z-shape" d="M158 66 L182 78 L182 118 L158 130 L142 118 L142 78 Z" fill="#e4e0d8"/>
+              <text class="z-label" x="162" y="100" text-anchor="middle">East</text>
+            </g>
+
+            <!-- SOUTH -->
+            <g class="zone-btn" data-zone="south" onclick="toggleZone(this)">
+              <path class="z-shape" d="M54 158 L78 142 L118 142 L142 158 L130 182 L66 182 Z" fill="#e4e0d8"/>
+              <text class="z-label" x="98" y="166" text-anchor="middle">South</text>
+            </g>
+
+            <!-- Thames -->
+            <path d="M22 114 Q98 126 174 114" stroke="#c8c2b6" stroke-width="1.2" fill="none"/>
+            <text font-family="Cormorant Garamond, serif" font-style="italic" font-size="7" fill="#b4ae a4" x="88" y="123" fill="#b0a898">Thames</text>
+          </svg>
+        </div>
+        <div class="map-hint">Tap area to filter · tap again to clear</div>
+      </div>
+
+      <!-- DAYS -->
+      <div class="panel-section">
+        <div class="panel-label">Day of week</div>
+        <ul class="day-list" id="dayList">
+          <li><button class="day-btn active" data-day="all" onclick="selectDay(this)">All <span class="day-count" id="cnt-all"></span></button></li>
+          <li><button class="day-btn" data-day="monday" onclick="selectDay(this)">Monday <span class="day-count" id="cnt-monday">0</span></button></li>
+          <li><button class="day-btn" data-day="tuesday" onclick="selectDay(this)">Tuesday <span class="day-count" id="cnt-tuesday">0</span></button></li>
+          <li><button class="day-btn" data-day="wednesday" onclick="selectDay(this)">Wednesday <span class="day-count" id="cnt-wednesday">0</span></button></li>
+          <li><button class="day-btn" data-day="thursday" onclick="selectDay(this)">Thursday <span class="day-count" id="cnt-thursday">0</span></button></li>
+          <li><button class="day-btn" data-day="friday" onclick="selectDay(this)">Friday <span class="day-count" id="cnt-friday">0</span></button></li>
+          <li><button class="day-btn" data-day="saturday" onclick="selectDay(this)">Saturday <span class="day-count" id="cnt-saturday">0</span></button></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <div class="filter-bar">
+        <span class="result-count" id="resultCount">— openings</span>
+        <div class="view-toggle">
+          <button class="view-btn active" id="btnList" onclick="setView('list')">List</button>
+          <button class="view-btn" id="btnWeek" onclick="setView('week')">Week</button>
+        </div>
+      </div>
+
+      <div id="listView"></div>
+      <div id="weekView"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SIGN UP MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+
+    <div id="formState">
+      <div class="modal-title">Early Access</div>
+      <div class="modal-sub">A curated weekly guide to London gallery openings.<br>Beta — free, no spam.</div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="fieldName" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="fieldEmail" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>I am a —</label>
+        <select id="fieldRole">
+          <option value="" disabled selected>Select one</option>
+          <option value="artist">Artist</option>
+          <option value="gallerist">Gallerist</option>
+          <option value="curator">Curator</option>
+          <option value="collector">Collector</option>
+          <option value="press">Press</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        <button class="submit-btn" id="submitBtn" onclick="handleSignup()">Request Access</button>
+      </div>
+      <div class="modal-msg" id="modalMsg"></div>
+    </div>
+
+    <div class="success-state" id="successState">
+      <div class="success-icon">○</div>
+      <div class="success-title">You're on the list.</div>
+      <div class="success-copy">We'll be in touch before the next opening week.<br>In the meantime, explore what's on.</div>
+      <div style="margin-top:24px">
+        <button class="submit-btn" style="width:100%" onclick="closeModal()">Back to openings</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// SUPABASE CONFIG
+// Replace these two values with your project's URL + anon key from supabase.com
+// ─────────────────────────────────────────────
+const SUPABASE_URL  = 'https://dkxmmqbbzarlbfiuapdc.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRreG1tcWJiemFybGJmaXVhcGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MzcxNzAsImV4cCI6MjA4ODMxMzE3MH0.nRgwzZE6OR6a9QPy2G8NUT9ugCe7X5o0T7qEQmGLDG8';
+
+// ─────────────────────────────────────────────
+// OPENINGS DATA
+// Edit this each Sunday. date format: 'DD Mon'
+// zones: central | east | south | north | west
+// days:  monday | tuesday | wednesday | thursday | friday | saturday
+// ─────────────────────────────────────────────
+const OPENINGS = [
+  { gallery:"Ginny on Frederick",   artist:"Anthea Hamilton",        show:"New Works",               zone:"central", day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Rose Easton",          artist:"Phoebe Collings-James",  show:"Soft Architecture",       zone:"east",    day:"wednesday",date:"11 Mar", time:"6:30–9pm", preview:false },
+  { gallery:"Hannah Barry",         artist:"Lynette Yiadom-Boakye",  show:"Seven Diaries",           zone:"south",   day:"friday",   date:"13 Mar", time:"6–8:30pm", preview:false },
+  { gallery:"Studio Chapple",       artist:"Tschabalala Self",       show:"Body Language",           zone:"south",   day:"thursday", date:"12 Mar", time:"5–7:30pm", preview:true  },
+  { gallery:"Sadie Coles HQ",       artist:"Wilhelm Sasnal",         show:"Painting in Dark Times",  zone:"central", day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Maureen Paley",        artist:"Wolfgang Tillmans",      show:"A Life in Print",         zone:"east",    day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
+  { gallery:"Cabinet",              artist:"Corin Sworn",            show:"The Listening Room",      zone:"east",    day:"friday",   date:"13 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Corvi-Mora",           artist:"Enrico David",           show:"Figures in Landscape",    zone:"south",   day:"saturday", date:"14 Mar", time:"11am–5pm", preview:false },
+  { gallery:"Hollybush Gardens",    artist:"Emma Hart",              show:"TABLOID",                 zone:"east",    day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Soft Opening",         artist:"Haroon Mirza",           show:"Signal Loops",            zone:"central", day:"friday",   date:"13 Mar", time:"6–8:30pm", preview:false },
+  { gallery:"Arcadia Missa",        artist:"Precious Okoyomon",      show:"to burn your house down", zone:"east",    day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
+  { gallery:"Edel Assanti",         artist:"Laura Aldridge",         show:"Carrier Wave",            zone:"central", day:"tuesday",  date:"10 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Gathering",            artist:"Group Show",             show:"Material Witness",        zone:"north",   day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
+  { gallery:"Lisson Gallery",       artist:"Richard Long",           show:"Stone Water Miles",       zone:"central", day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:false },
+  { gallery:"Ordet",                artist:"Florian Krewer",         show:"Night Grammar",           zone:"west",    day:"monday",   date:"9 Mar",  time:"6–8pm",    preview:false },
+  { gallery:"Carlos/Ishikawa",      artist:"Sidsel Meineche Hansen", show:"BODY WORK",               zone:"east",    day:"friday",   date:"13 Mar", time:"6–9pm",    preview:false },
+  { gallery:"Pilar Corrias",        artist:"Cecily Brown",           show:"Ten Paintings",           zone:"central", day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:true  },
+  { gallery:"Kate MacGarry",        artist:"Hardeep Pandhal",        show:"The Great Unwashed",      zone:"east",    day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
+];
+
+const DAY_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday"];
+const DAY_LABEL = { monday:"Monday", tuesday:"Tuesday", wednesday:"Wednesday", thursday:"Thursday", friday:"Friday", saturday:"Saturday" };
+const ZONE_LABEL = { central:"Central", east:"East", south:"South", north:"North", west:"West" };
+
+let activeZone = null;
+let activeDay  = "all";
+let activeView = "list";
+
+// ── WEEK LABEL ──
+function setWeekLabel() {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  const saturday = new Date(monday);
+  saturday.setDate(monday.getDate() + 5);
+  const fmt = d => d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  document.getElementById('weekLabel').textContent = `${fmt(monday)} – ${fmt(saturday)}`;
+}
+
+// ── FILTER ──
+function getFiltered() {
+  return OPENINGS.filter(o => {
+    const zOk = !activeZone || o.zone === activeZone;
+    const dOk = activeDay === 'all' || o.day === activeDay;
+    return zOk && dOk;
+  });
+}
+
+// ── ZONE ──
+function toggleZone(el) {
+  const z = el.dataset.zone;
+  if (activeZone === z) {
+    activeZone = null;
+    el.classList.remove('active');
+  } else {
+    activeZone = z;
+    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+  render();
+}
+
+// ── DAY ──
+function selectDay(btn) {
+  activeDay = btn.dataset.day;
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// ── VIEW ──
+function setView(v) {
+  activeView = v;
+  document.getElementById('btnList').classList.toggle('active', v === 'list');
+  document.getElementById('btnWeek').classList.toggle('active', v === 'week');
+  document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
+  const wv = document.getElementById('weekView');
+  wv.style.display = v === 'week' ? 'grid' : 'none';
+  if (v === 'week') wv.classList.add('active');
+  render();
+}
+
+// ── UPDATE DAY COUNTS ──
+function updateCounts(filtered) {
+  const counts = {};
+  DAY_ORDER.forEach(d => counts[d] = 0);
+  filtered.forEach(o => { if (counts[o.day] !== undefined) counts[o.day]++; });
+  DAY_ORDER.forEach(d => {
+    const el = document.getElementById(`cnt-${d}`);
+    if (el) el.textContent = counts[d] || '';
+  });
+  document.getElementById('cnt-all').textContent = '';
+}
+
+// ── RENDER LIST ──
+function renderList(data) {
+  const container = document.getElementById('listView');
+  if (!data.length) {
+    container.innerHTML = '<div class="empty">No openings match this selection.</div>';
+    return;
+  }
+
+  const byDay = {};
+  DAY_ORDER.forEach(d => byDay[d] = []);
+  data.forEach(o => { if (byDay[o.day]) byDay[o.day].push(o); });
+
+  let html = '';
+  DAY_ORDER.forEach(d => {
+    if (!byDay[d].length) return;
+    html += `
+      <div class="day-group">
+        <div class="day-group-header">
+          <span class="dg-name">${DAY_LABEL[d]}</span>
+          <span class="dg-date">${byDay[d][0].date}</span>
+        </div>`;
+    byDay[d].forEach(o => {
+      html += `
+        <div class="opening-card">
+          <div class="card-time">
+            <strong>${o.time.split('–')[0]}</strong>
+            ${o.time}
+          </div>
+          <div>
+            <div class="card-gallery">${o.gallery}</div>
+            <div class="card-artist">${o.artist}</div>
+            <div class="card-show">${o.show}</div>
+            <div class="card-tags">
+              <span class="zone-tag">${ZONE_LABEL[o.zone]}</span>
+              ${o.preview ? '<span class="preview-tag">Preview</span>' : ''}
+            </div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ── RENDER WEEK ──
+function renderWeek(data) {
+  const container = document.getElementById('weekView');
+  const byDay = {};
+  DAY_ORDER.forEach(d => byDay[d] = []);
+  data.forEach(o => { if (byDay[o.day]) byDay[o.day].push(o); });
+
+  let html = '';
+  DAY_ORDER.forEach(d => {
+    const items = byDay[d];
+    html += `<div class="wk-col ${items.length ? 'has-items' : ''}">
+      <div class="wk-day-name">${DAY_LABEL[d].slice(0,3)}</div>`;
+    items.forEach(o => {
+      html += `<div class="wk-item">
+        <div class="wk-gallery">${o.gallery}</div>
+        <div class="wk-artist">${o.artist}</div>
+        <div class="wk-time">${o.time}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ── MAIN RENDER ──
+function render() {
+  const data = getFiltered();
+  updateCounts(data);
+
+  const total = data.length;
+  const zoneStr = activeZone ? ` · ${ZONE_LABEL[activeZone]}` : '';
+  const dayStr  = activeDay !== 'all' ? ` · ${DAY_LABEL[activeDay]}` : '';
+  document.getElementById('resultCount').textContent = `${total} opening${total !== 1 ? 's' : ''}${zoneStr}${dayStr}`;
+
+  if (activeView === 'list') renderList(data);
+  else renderWeek(data);
+}
+
+// ── MODAL ──
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('formState').style.display = 'block';
+  document.getElementById('successState').classList.remove('show');
+  document.getElementById('modalMsg').textContent = '';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+async function handleSignup() {
+  const name  = document.getElementById('fieldName').value.trim();
+  const email = document.getElementById('fieldEmail').value.trim();
+  const role  = document.getElementById('fieldRole').value;
+  const msg   = document.getElementById('modalMsg');
+  const btn   = document.getElementById('submitBtn');
+
+  if (!name)  { msg.textContent = 'Please enter your name.'; msg.className = 'modal-msg error'; return; }
+  if (!email || !email.includes('@')) { msg.textContent = 'Please enter a valid email.'; msg.className = 'modal-msg error'; return; }
+  if (!role)  { msg.textContent = 'Please select your role.'; msg.className = 'modal-msg error'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  msg.textContent = '';
+
+  // If Supabase not configured, fall back gracefully
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+    // Demo mode — just show success
+    await new Promise(r => setTimeout(r, 600));
+    document.getElementById('formState').style.display = 'none';
+    document.getElementById('successState').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Request Access';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/signups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ name, email, role, created_at: new Date().toISOString() })
+    });
+
+    if (res.ok || res.status === 201) {
+      document.getElementById('formState').style.display = 'none';
+      document.getElementById('successState').classList.add('show');
+    } else {
+      const err = await res.json().catch(() => ({}));
+      if (res.status === 409 || (err.code === '23505')) {
+        msg.textContent = 'That email is already registered.';
+      } else {
+        msg.textContent = 'Something went wrong. Try again.';
+      }
+      msg.className = 'modal-msg error';
+    }
+  } catch(e) {
+    msg.textContent = 'Connection error. Please try again.';
+    msg.className = 'modal-msg error';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Request Access';
+}
+
+// ── INIT ──
+setWeekLabel();
+render();
+</script>
+</body>
+</html>
