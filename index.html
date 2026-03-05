@@ -4,655 +4,306 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>London Art Openings</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Helvetica+Neue:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --ink: #0e0e0e;
-  --paper: #f4f1eb;
-  --mid: #9a9488;
-  --rule: #ddd8ce;
-  --tag-bg: #eae6de;
-  --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-html, body { height: 100%; background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; font-size: 13px; -webkit-font-smoothing: antialiased; }
-
-/* ── LAYOUT ── */
-.app { display: grid; grid-template-rows: auto 1fr; height: 100vh; overflow: hidden; }
-
-header {
-  padding: 18px 32px;
-  border-bottom: 1px solid var(--rule);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.wordmark { font-family: var(--serif); font-size: 21px; font-weight: 300; font-style: italic; letter-spacing: -0.01em; }
-.wordmark em { font-style: normal; font-weight: 400; }
-
-.header-right { display: flex; align-items: center; gap: 20px; }
-
-.week-label { font-size: 10px; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; }
-
-.signup-btn {
-  padding: 7px 16px;
-  background: var(--ink);
-  color: var(--paper);
-  border: none;
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 2px;
-  transition: opacity 0.15s;
-}
-.signup-btn:hover { opacity: 0.75; }
-
-.main { display: grid; grid-template-columns: 260px 1fr; overflow: hidden; }
-
-/* ── LEFT PANEL ── */
-.left-panel { border-right: 1px solid var(--rule); display: flex; flex-direction: column; overflow-y: auto; }
-
-.panel-section { padding: 20px 22px 18px; border-bottom: 1px solid var(--rule); }
-
-.panel-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; }
-
-/* ── MAP ── */
-.map-wrap { display: flex; justify-content: center; }
-
-.zone-btn { cursor: pointer; }
-.zone-btn .z-shape { transition: fill 0.18s; }
-.zone-btn:hover .z-shape { opacity: 0.7; }
-.zone-btn.active .z-shape { fill: var(--ink) !important; }
-.zone-btn.active .z-label { fill: var(--paper) !important; }
-.z-label { font-family: var(--sans); font-size: 8.5px; letter-spacing: 0.09em; text-transform: uppercase; fill: var(--ink); pointer-events: none; transition: fill 0.18s; }
-
-.map-hint { text-align: center; margin-top: 10px; font-size: 10px; color: var(--mid); }
-
-/* ── DAY BUTTONS ── */
-.day-list { list-style: none; display: flex; flex-direction: column; gap: 1px; }
-
-.day-btn {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 10px; border-radius: 2px; cursor: pointer;
-  border: none; background: none; width: 100%; text-align: left;
-  font-family: var(--sans); font-size: 12px; font-weight: 300;
-  color: var(--ink); letter-spacing: 0.01em; transition: background 0.1s;
-}
-.day-btn:hover { background: var(--tag-bg); }
-.day-btn.active { background: var(--ink); color: var(--paper); }
-.day-count { font-size: 10px; color: var(--mid); }
-.day-btn.active .day-count { color: rgba(244,241,235,0.45); }
-
-/* ── RIGHT PANEL ── */
-.right-panel { overflow-y: auto; }
-
-.filter-bar {
-  padding: 13px 32px;
-  border-bottom: 1px solid var(--rule);
-  display: flex; align-items: center; gap: 16px;
-  position: sticky; top: 0; background: var(--paper); z-index: 5;
-}
-
-.result-count { font-size: 11px; color: var(--mid); }
-
-.view-toggle { margin-left: auto; display: flex; }
-
-.view-btn {
-  padding: 5px 14px; font-size: 9px; letter-spacing: 0.12em;
-  text-transform: uppercase; border: 1px solid var(--rule);
-  background: none; color: var(--mid); cursor: pointer;
-  font-family: var(--sans); transition: all 0.12s;
-}
-.view-btn:first-child { border-radius: 2px 0 0 2px; }
-.view-btn:last-child { border-radius: 0 2px 2px 0; margin-left: -1px; }
-.view-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-/* ── LIST VIEW ── */
-#listView { padding: 0 32px 48px; }
-
-.day-group { margin-top: 32px; }
-
-.day-group-header {
-  display: flex; align-items: baseline; gap: 12px;
-  padding-bottom: 10px; border-bottom: 1px solid var(--rule); margin-bottom: 4px;
-}
-
-.dg-name { font-family: var(--serif); font-size: 22px; font-weight: 300; font-style: italic; }
-.dg-date { font-size: 10px; color: var(--mid); letter-spacing: 0.08em; text-transform: uppercase; }
-
-.opening-card {
-  display: grid;
-  grid-template-columns: 100px 1fr auto;
-  gap: 20px;
-  padding: 15px 0;
-  border-bottom: 1px solid var(--rule);
-  transition: opacity 0.12s;
-}
-.opening-card:hover { opacity: 0.6; cursor: pointer; }
-
-.card-time { font-size: 11px; color: var(--mid); padding-top: 2px; line-height: 1.5; }
-.card-time strong { display: block; color: var(--ink); font-weight: 400; font-size: 12px; }
-
-.card-gallery { font-size: 13px; font-weight: 400; margin-bottom: 3px; }
-.card-artist { font-family: var(--serif); font-size: 16px; font-style: italic; font-weight: 300; margin-bottom: 5px; line-height: 1.3; }
-.card-show { font-size: 11px; color: var(--mid); margin-bottom: 6px; }
-
-.card-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-
-.zone-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--mid); background: var(--tag-bg);
-  padding: 2px 7px; border-radius: 2px;
-}
-
-.preview-tag {
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--paper); background: var(--ink);
-  padding: 2px 7px; border-radius: 2px;
-}
-
-.card-address { font-size: 11px; color: var(--mid); }
-
-/* ── WEEK VIEW ── */
-#weekView { display: none; padding: 24px 32px 48px; }
-#weekView.active { display: grid; grid-template-columns: repeat(6,1fr); gap: 14px; }
-
-.wk-col { border-top: 2px solid var(--rule); padding-top: 12px; }
-.wk-col.has-items { border-top-color: var(--ink); }
-.wk-day-name { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
-.wk-col.has-items .wk-day-name { color: var(--ink); }
-
-.wk-item { padding: 7px 8px; border-radius: 2px; margin-bottom: 6px; cursor: pointer; transition: background 0.1s; }
-.wk-item:hover { background: var(--tag-bg); }
-.wk-gallery { font-size: 11px; font-weight: 400; }
-.wk-artist { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--mid); line-height: 1.3; }
-.wk-time { font-size: 10px; color: var(--mid); margin-top: 3px; }
-
-/* ── EMPTY ── */
-.empty { text-align: center; padding: 80px; color: var(--mid); font-family: var(--serif); font-style: italic; font-size: 20px; }
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(14,14,14,0.55); z-index: 100;
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--paper); width: 400px; max-width: 92vw;
-  border: 1px solid var(--rule); border-radius: 3px;
-  padding: 40px 36px 36px;
-  animation: modalIn 0.2s ease;
-}
-
-@keyframes modalIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-
-.modal-title { font-family: var(--serif); font-size: 26px; font-style: italic; font-weight: 300; margin-bottom: 6px; }
-.modal-sub { font-size: 11px; color: var(--mid); line-height: 1.6; margin-bottom: 28px; }
-
-.field { margin-bottom: 18px; }
-.field label { display: block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 7px; }
-
-.field input, .field select {
-  width: 100%; padding: 10px 12px;
-  border: 1px solid var(--rule); border-radius: 2px;
-  background: #fff; font-family: var(--sans); font-size: 13px;
-  font-weight: 300; color: var(--ink); outline: none;
-  transition: border-color 0.15s; appearance: none;
-}
-.field input:focus, .field select:focus { border-color: var(--ink); }
-
-.modal-actions { display: flex; gap: 10px; margin-top: 24px; align-items: center; }
-
-.submit-btn {
-  flex: 1; padding: 11px;
-  background: var(--ink); color: var(--paper);
-  border: none; font-family: var(--sans); font-size: 10px;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  cursor: pointer; border-radius: 2px; transition: opacity 0.15s;
-}
-.submit-btn:hover { opacity: 0.75; }
-.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.cancel-btn {
-  padding: 11px 16px; background: none; color: var(--mid);
-  border: 1px solid var(--rule); font-family: var(--sans);
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-  cursor: pointer; border-radius: 2px;
-}
-
-.modal-msg { font-size: 11px; color: var(--mid); margin-top: 12px; min-height: 16px; }
-.modal-msg.success { color: #2a6e3f; }
-.modal-msg.error { color: #8b2020; }
-
-/* ── SUCCESS STATE ── */
-.success-state { display: none; text-align: center; padding: 20px 0; }
-.success-state.show { display: block; }
-.success-icon { font-size: 32px; margin-bottom: 16px; }
-.success-title { font-family: var(--serif); font-size: 24px; font-style: italic; margin-bottom: 8px; }
-.success-copy { font-size: 12px; color: var(--mid); line-height: 1.6; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0e0e0e;--paper:#f4f1eb;--mid:#9a9488;--rule:#ddd8ce;--tag-bg:#eae6de;--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',Helvetica,Arial,sans-serif;--gold:#b8963e;--green:#2a6e3f;--red:#8b2020;--blue:#1a3a5c}
+html,body{height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:13px;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-rows:auto auto 1fr;height:100vh;overflow:hidden}
+header{padding:16px 32px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;background:var(--paper)}
+.wordmark{font-family:var(--serif);font-size:20px;font-weight:300;font-style:italic;letter-spacing:-.01em}
+.wordmark em{font-style:normal;font-weight:500}
+.header-right{display:flex;align-items:center;gap:16px}
+.week-label{font-size:10px;color:var(--mid);letter-spacing:.1em;text-transform:uppercase}
+.role-bar{padding:8px 32px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:6px;background:var(--ink)}
+.role-label{font-size:9px;color:rgba(244,241,235,.45);letter-spacing:.15em;text-transform:uppercase;margin-right:8px}
+.role-btn{padding:4px 12px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(244,241,235,.2);background:none;color:rgba(244,241,235,.55);cursor:pointer;font-family:var(--sans);border-radius:2px;transition:all .15s}
+.role-btn:hover{border-color:rgba(244,241,235,.5);color:rgba(244,241,235,.8)}
+.role-btn.active{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.role-hint{margin-left:auto;font-size:9px;color:rgba(244,241,235,.3);letter-spacing:.05em;font-style:italic;font-family:var(--serif)}
+.signup-btn{padding:7px 16px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .15s}
+.signup-btn:hover{background:transparent;color:var(--ink)}
+.main{display:grid;grid-template-columns:240px 1fr;overflow:hidden}
+.left-panel{border-right:1px solid var(--rule);display:flex;flex-direction:column;overflow-y:auto}
+.panel-section{padding:18px 20px 16px;border-bottom:1px solid var(--rule)}
+.panel-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:12px}
+.map-wrap{display:flex;justify-content:center}
+.zone-btn{cursor:pointer}
+.zone-btn .z-shape{transition:fill .18s}
+.zone-btn:hover .z-shape{opacity:.7}
+.zone-btn.active .z-shape{fill:var(--ink)!important}
+.zone-btn.active .z-label{fill:var(--paper)!important}
+.z-label{font-family:var(--sans);font-size:8px;letter-spacing:.09em;text-transform:uppercase;fill:var(--ink);pointer-events:none;transition:fill .18s}
+.map-hint{text-align:center;margin-top:8px;font-size:10px;color:var(--mid)}
+.day-list{list-style:none;display:flex;flex-direction:column;gap:1px}
+.day-btn{display:flex;justify-content:space-between;align-items:center;padding:7px 8px;border-radius:2px;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--sans);font-size:12px;font-weight:300;color:var(--ink);transition:background .1s}
+.day-btn:hover{background:var(--tag-bg)}
+.day-btn.active{background:var(--ink);color:var(--paper)}
+.day-count{font-size:10px;color:var(--mid)}
+.day-btn.active .day-count{color:rgba(244,241,235,.4)}
+.filter-toggle{display:flex;flex-direction:column;gap:4px}
+.ftoggle{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:2px;cursor:pointer;transition:background .1s}
+.ftoggle:hover{background:var(--tag-bg)}
+.ftoggle input{cursor:pointer;accent-color:var(--ink)}
+.ftoggle label{font-size:11px;cursor:pointer}
+.right-panel{overflow-y:auto}
+.filter-bar{padding:11px 32px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:16px;position:sticky;top:0;background:var(--paper);z-index:5}
+.result-count{font-size:11px;color:var(--mid)}
+.view-toggle{margin-left:auto;display:flex}
+.view-btn{padding:5px 12px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--rule);background:none;color:var(--mid);cursor:pointer;font-family:var(--sans);transition:all .12s}
+.view-btn:first-child{border-radius:2px 0 0 2px}
+.view-btn:last-child{border-radius:0 2px 2px 0;margin-left:-1px}
+.view-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.role-banner{display:none;padding:10px 32px;font-size:11px;border-bottom:1px solid var(--rule);align-items:center;gap:8px}
+.role-banner.show{display:flex}
+.role-banner.collector{background:#fdf8f0;color:var(--gold);border-left:3px solid var(--gold)}
+.role-banner.press{background:#f0f4fa;color:var(--blue);border-left:3px solid var(--blue)}
+.role-banner.artist{background:#f0faf4;color:var(--green);border-left:3px solid var(--green)}
+.role-banner b{font-weight:500}
+.network-strip{display:none;padding:10px 32px;background:#f9f7f2;border-bottom:1px solid var(--rule);font-size:11px;align-items:center;gap:8px;color:var(--mid)}
+.network-strip.show{display:flex}
+.network-strip strong{color:var(--ink);font-weight:400}
+#listView{padding:0 32px 48px}
+.day-group{margin-top:28px}
+.day-group-header{display:flex;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--rule);margin-bottom:4px}
+.dg-name{font-family:var(--serif);font-size:22px;font-weight:300;font-style:italic}
+.dg-date{font-size:10px;color:var(--mid);letter-spacing:.08em;text-transform:uppercase}
+.opening-card{display:grid;grid-template-columns:90px 1fr auto;gap:18px;padding:13px 0;border-bottom:1px solid var(--rule);transition:opacity .12s;position:relative}
+.opening-card:hover{opacity:.65;cursor:pointer}
+.opening-card.curated{border-left:2px solid var(--ink);padding-left:12px;margin-left:-14px}
+.card-time{font-size:11px;color:var(--mid);padding-top:2px;line-height:1.6}
+.card-time strong{display:block;color:var(--ink);font-weight:400;font-size:12px}
+.card-gallery{font-size:13px;font-weight:400;margin-bottom:2px}
+.card-artist{font-family:var(--serif);font-size:16px;font-style:italic;font-weight:300;margin-bottom:4px;line-height:1.3}
+.card-show{font-size:11px;color:var(--mid);margin-bottom:5px}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tag{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px}
+.tag-zone{color:var(--mid);background:var(--tag-bg)}
+.tag-preview{color:var(--paper);background:var(--ink)}
+.tag-curated{color:#fff;background:var(--ink);border:1px solid var(--ink)}
+.tag-pv{color:var(--gold);background:#fdf8f0;border:1px solid var(--gold)}
+.card-role-info{font-size:10px;margin-top:4px;line-height:1.5}
+.card-role-info.collector{color:var(--gold)}
+.card-role-info.press{color:var(--blue)}
+.card-role-info.artist{color:var(--green)}
+.card-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px;min-width:70px}
+.attend-btn{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--rule);background:none;color:var(--mid);cursor:pointer;font-family:var(--sans);border-radius:2px;transition:all .15s;white-space:nowrap}
+.attend-btn:hover,.attend-btn.going{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.rating-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.rating-label{font-size:8.5px;color:var(--mid);letter-spacing:.05em}
+.stars{display:flex;gap:2px}
+.star{font-size:12px;cursor:pointer;color:var(--rule);transition:color .1s;line-height:1}
+.star:hover,.star.lit{color:var(--ink)}
+.going-count{font-size:9px;color:var(--mid);text-align:right}
+.going-count span{color:var(--ink);font-weight:400}
+#weekView{display:none;padding:24px 32px 48px}
+#weekView.active{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.wk-col{border-top:2px solid var(--rule);padding-top:10px}
+.wk-col.has-items{border-top-color:var(--ink)}
+.wk-day-name{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.wk-col.has-items .wk-day-name{color:var(--ink)}
+.wk-item{padding:6px 7px;border-radius:2px;margin-bottom:5px;cursor:pointer;transition:background .1s;border-left:2px solid transparent}
+.wk-item:hover{background:var(--tag-bg)}
+.wk-item.curated{border-left-color:var(--ink)}
+.wk-gallery{font-size:11px;font-weight:400}
+.wk-artist{font-family:var(--serif);font-style:italic;font-size:12px;color:var(--mid);line-height:1.3}
+.wk-time{font-size:10px;color:var(--mid);margin-top:2px}
+.empty{text-align:center;padding:80px;color:var(--mid);font-family:var(--serif);font-style:italic;font-size:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(14,14,14,.6);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--paper);width:420px;max-width:94vw;border:1px solid var(--rule);border-radius:3px;padding:38px 34px 32px;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-title{font-family:var(--serif);font-size:26px;font-style:italic;font-weight:300;margin-bottom:5px}
+.modal-sub{font-size:11px;color:var(--mid);line-height:1.6;margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--rule);border-radius:2px;background:#fff;font-family:var(--sans);font-size:13px;font-weight:300;color:var(--ink);outline:none;transition:border-color .15s;appearance:none}
+.field input:focus,.field select:focus{border-color:var(--ink)}
+.pv-field{display:none}
+.pv-field.show{display:block}
+.pv-note{font-size:10px;color:var(--mid);margin-top:6px;line-height:1.5}
+.modal-actions{display:flex;gap:10px;margin-top:22px;align-items:center}
+.submit-btn{flex:1;padding:10px;background:var(--ink);color:var(--paper);border:none;font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:opacity .15s}
+.submit-btn:hover{opacity:.75}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+.cancel-btn{padding:10px 14px;background:none;color:var(--mid);border:1px solid var(--rule);font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:2px}
+.modal-msg{font-size:11px;color:var(--mid);margin-top:10px;min-height:16px}
+.modal-msg.success{color:var(--green)}
+.modal-msg.error{color:var(--red)}
+.success-state{display:none;text-align:center;padding:16px 0}
+.success-state.show{display:block}
+.success-icon{font-size:28px;margin-bottom:14px}
+.success-title{font-family:var(--serif);font-size:24px;font-style:italic;margin-bottom:6px}
+.success-copy{font-size:11px;color:var(--mid);line-height:1.6}
 </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- HEADER -->
-  <header>
-    <div class="wordmark"><em>London</em> Art Openings</div>
-    <div class="header-right">
-      <span class="week-label" id="weekLabel"></span>
-      <button class="signup-btn" onclick="openModal()">Get Early Access</button>
+<header>
+  <div class="wordmark"><em>London</em> Art Openings</div>
+  <div class="header-right">
+    <span class="week-label" id="weekLabel"></span>
+    <button class="signup-btn" onclick="openModal()">Get Access</button>
+  </div>
+</header>
+<div class="role-bar">
+  <span class="role-label">I am a</span>
+  <button class="role-btn active" data-role="all" onclick="setRole(this)">All</button>
+  <button class="role-btn" data-role="collector" onclick="setRole(this)">Collector</button>
+  <button class="role-btn" data-role="artist" onclick="setRole(this)">Artist</button>
+  <button class="role-btn" data-role="press" onclick="setRole(this)">Press</button>
+  <button class="role-btn" data-role="gallerist" onclick="setRole(this)">Gallerist</button>
+  <button class="role-btn" data-role="curator" onclick="setRole(this)">Curator</button>
+  <span class="role-hint" id="roleHint"></span>
+</div>
+<div class="main">
+  <div class="left-panel">
+    <div class="panel-section">
+      <div class="panel-label">Area</div>
+      <div class="map-wrap">
+        <svg width="188" height="188" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g class="zone-btn" data-zone="north" onclick="toggleZone(this)"><path class="z-shape" d="M66 14 L130 14 L142 38 L118 54 L78 54 L54 38 Z" fill="#e4e0d8"/><text class="z-label" x="98" y="37" text-anchor="middle">North</text></g>
+          <g class="zone-btn" data-zone="west" onclick="toggleZone(this)"><path class="z-shape" d="M14 66 L38 54 L54 78 L54 118 L38 142 L14 130 Z" fill="#e4e0d8"/><text class="z-label" x="32" y="100" text-anchor="middle">West</text></g>
+          <g class="zone-btn" data-zone="central" onclick="toggleZone(this)"><path class="z-shape" d="M78 54 L118 54 L132 68 L132 128 L118 142 L78 142 L64 128 L64 68 Z" fill="#d6d1c8"/><text class="z-label" x="98" y="100" text-anchor="middle">Central</text></g>
+          <g class="zone-btn" data-zone="east" onclick="toggleZone(this)"><path class="z-shape" d="M158 66 L182 78 L182 118 L158 130 L142 118 L142 78 Z" fill="#e4e0d8"/><text class="z-label" x="162" y="100" text-anchor="middle">East</text></g>
+          <g class="zone-btn" data-zone="south" onclick="toggleZone(this)"><path class="z-shape" d="M54 158 L78 142 L118 142 L142 158 L130 182 L66 182 Z" fill="#e4e0d8"/><text class="z-label" x="98" y="166" text-anchor="middle">South</text></g>
+          <path d="M22 114 Q98 126 174 114" stroke="#c8c2b6" stroke-width="1.2" fill="none"/>
+          <text font-family="Cormorant Garamond,serif" font-style="italic" font-size="7" x="88" y="123" fill="#b0a898">Thames</text>
+        </svg>
+      </div>
+      <div class="map-hint">Tap area to filter · tap again to clear</div>
     </div>
-  </header>
-
-  <div class="main">
-
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-
-      <!-- MAP -->
-      <div class="panel-section">
-        <div class="panel-label">Area</div>
-        <div class="map-wrap">
-          <svg width="196" height="196" viewBox="0 0 196 196" fill="none" xmlns="http://www.w3.org/2000/svg">
-
-            <!-- NORTH -->
-            <g class="zone-btn" data-zone="north" onclick="toggleZone(this)">
-              <path class="z-shape" d="M66 14 L130 14 L142 38 L118 54 L78 54 L54 38 Z" fill="#e4e0d8"/>
-              <text class="z-label" x="98" y="37" text-anchor="middle">North</text>
-            </g>
-
-            <!-- WEST -->
-            <g class="zone-btn" data-zone="west" onclick="toggleZone(this)">
-              <path class="z-shape" d="M14 66 L38 54 L54 78 L54 118 L38 142 L14 130 Z" fill="#e4e0d8"/>
-              <text class="z-label" x="32" y="100" text-anchor="middle">West</text>
-            </g>
-
-            <!-- CENTRAL -->
-            <g class="zone-btn" data-zone="central" onclick="toggleZone(this)">
-              <path class="z-shape" d="M78 54 L118 54 L132 68 L132 128 L118 142 L78 142 L64 128 L64 68 Z" fill="#d6d1c8"/>
-              <text class="z-label" x="98" y="100" text-anchor="middle">Central</text>
-            </g>
-
-            <!-- EAST -->
-            <g class="zone-btn" data-zone="east" onclick="toggleZone(this)">
-              <path class="z-shape" d="M158 66 L182 78 L182 118 L158 130 L142 118 L142 78 Z" fill="#e4e0d8"/>
-              <text class="z-label" x="162" y="100" text-anchor="middle">East</text>
-            </g>
-
-            <!-- SOUTH -->
-            <g class="zone-btn" data-zone="south" onclick="toggleZone(this)">
-              <path class="z-shape" d="M54 158 L78 142 L118 142 L142 158 L130 182 L66 182 Z" fill="#e4e0d8"/>
-              <text class="z-label" x="98" y="166" text-anchor="middle">South</text>
-            </g>
-
-            <!-- Thames -->
-            <path d="M22 114 Q98 126 174 114" stroke="#c8c2b6" stroke-width="1.2" fill="none"/>
-            <text font-family="Cormorant Garamond, serif" font-style="italic" font-size="7" fill="#b4ae a4" x="88" y="123" fill="#b0a898">Thames</text>
-          </svg>
-        </div>
-        <div class="map-hint">Tap area to filter · tap again to clear</div>
-      </div>
-
-      <!-- DAYS -->
-      <div class="panel-section">
-        <div class="panel-label">Day of week</div>
-        <ul class="day-list" id="dayList">
-          <li><button class="day-btn active" data-day="all" onclick="selectDay(this)">All <span class="day-count" id="cnt-all"></span></button></li>
-          <li><button class="day-btn" data-day="monday" onclick="selectDay(this)">Monday <span class="day-count" id="cnt-monday">0</span></button></li>
-          <li><button class="day-btn" data-day="tuesday" onclick="selectDay(this)">Tuesday <span class="day-count" id="cnt-tuesday">0</span></button></li>
-          <li><button class="day-btn" data-day="wednesday" onclick="selectDay(this)">Wednesday <span class="day-count" id="cnt-wednesday">0</span></button></li>
-          <li><button class="day-btn" data-day="thursday" onclick="selectDay(this)">Thursday <span class="day-count" id="cnt-thursday">0</span></button></li>
-          <li><button class="day-btn" data-day="friday" onclick="selectDay(this)">Friday <span class="day-count" id="cnt-friday">0</span></button></li>
-          <li><button class="day-btn" data-day="saturday" onclick="selectDay(this)">Saturday <span class="day-count" id="cnt-saturday">0</span></button></li>
-        </ul>
-      </div>
-
+    <div class="panel-section">
+      <div class="panel-label">Day</div>
+      <ul class="day-list">
+        <li><button class="day-btn active" data-day="all" onclick="selectDay(this)">All <span class="day-count" id="cnt-all"></span></button></li>
+        <li><button class="day-btn" data-day="thursday" onclick="selectDay(this)">Thursday <span class="day-count" id="cnt-thursday">0</span></button></li>
+        <li><button class="day-btn" data-day="friday" onclick="selectDay(this)">Friday <span class="day-count" id="cnt-friday">0</span></button></li>
+        <li><button class="day-btn" data-day="saturday" onclick="selectDay(this)">Saturday <span class="day-count" id="cnt-saturday">0</span></button></li>
+        <li><button class="day-btn" data-day="sunday" onclick="selectDay(this)">Sunday <span class="day-count" id="cnt-sunday">0</span></button></li>
+        <li><button class="day-btn" data-day="monday" onclick="selectDay(this)">Monday <span class="day-count" id="cnt-monday">0</span></button></li>
+        <li><button class="day-btn" data-day="tuesday" onclick="selectDay(this)">Tuesday <span class="day-count" id="cnt-tuesday">0</span></button></li>
+        <li><button class="day-btn" data-day="wednesday" onclick="selectDay(this)">Wednesday <span class="day-count" id="cnt-wednesday">0</span></button></li>
+      </ul>
     </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-
-      <div class="filter-bar">
-        <span class="result-count" id="resultCount">— openings</span>
-        <div class="view-toggle">
-          <button class="view-btn active" id="btnList" onclick="setView('list')">List</button>
-          <button class="view-btn" id="btnWeek" onclick="setView('week')">Week</button>
-        </div>
+    <div class="panel-section">
+      <div class="panel-label">Show</div>
+      <div class="filter-toggle">
+        <div class="ftoggle"><input type="checkbox" id="fCurated" checked onchange="render()"><label for="fCurated">Curated picks only</label></div>
+        <div class="ftoggle"><input type="checkbox" id="fPV" onchange="render()"><label for="fPV">Private views</label></div>
+        <div class="ftoggle"><input type="checkbox" id="fFree" onchange="render()"><label for="fFree">Free entry</label></div>
       </div>
-
-      <div id="listView"></div>
-      <div id="weekView"></div>
-
     </div>
   </div>
+  <div class="right-panel">
+    <div class="role-banner collector" id="bannerCollector"><b>Collector view —</b> gallery tier, career stage, and market notes shown where available.</div>
+    <div class="role-banner press" id="bannerPress"><b>Press view —</b> press contacts and embargo details shown. PV access requests enabled.</div>
+    <div class="role-banner artist" id="bannerArtist"><b>Artist view —</b> showing who's exhibiting where and career context.</div>
+    <div class="network-strip show" id="networkStrip">◎ <strong>Sign in</strong> to see which openings people in your network are attending this week.</div>
+    <div class="filter-bar">
+      <span class="result-count" id="resultCount">— openings</span>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btnList" onclick="setView('list')">List</button>
+        <button class="view-btn" id="btnWeek" onclick="setView('week')">Week</button>
+      </div>
+    </div>
+    <div id="listView"></div>
+    <div id="weekView"></div>
+  </div>
 </div>
-
-<!-- SIGN UP MODAL -->
+</div>
 <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
   <div class="modal">
-
     <div id="formState">
-      <div class="modal-title">Early Access</div>
-      <div class="modal-sub">A curated weekly guide to London gallery openings.<br>Beta — free, no spam.</div>
-
-      <div class="field">
-        <label>Name</label>
-        <input type="text" id="fieldName" placeholder="Your name" autocomplete="name">
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="fieldEmail" placeholder="your@email.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>I am a —</label>
-        <select id="fieldRole">
+      <div class="modal-title">Get Access</div>
+      <div class="modal-sub">Curated London gallery openings, weekly.<br>Beta — free. Your role shapes what you see.</div>
+      <div class="field"><label>Name</label><input type="text" id="fieldName" placeholder="Your name" autocomplete="name"></div>
+      <div class="field"><label>Email</label><input type="email" id="fieldEmail" placeholder="your@email.com" autocomplete="email"></div>
+      <div class="field"><label>I am a —</label>
+        <select id="fieldRole" onchange="handleRoleChange()">
           <option value="" disabled selected>Select one</option>
           <option value="artist">Artist</option>
           <option value="gallerist">Gallerist</option>
           <option value="curator">Curator</option>
           <option value="collector">Collector</option>
-          <option value="press">Press</option>
+          <option value="press">Press / Critic</option>
           <option value="other">Other</option>
         </select>
       </div>
-
+      <div class="field pv-field" id="pvField">
+        <label>Publication / Institution <span style="font-size:9px;color:var(--mid)">(for PV access)</span></label>
+        <input type="text" id="fieldOrg" placeholder="e.g. Frieze, Tate, independent">
+        <div class="pv-note">Verified press and collectors can request private view access directly through the platform.</div>
+      </div>
       <div class="modal-actions">
         <button class="cancel-btn" onclick="closeModal()">Cancel</button>
         <button class="submit-btn" id="submitBtn" onclick="handleSignup()">Request Access</button>
       </div>
       <div class="modal-msg" id="modalMsg"></div>
     </div>
-
     <div class="success-state" id="successState">
       <div class="success-icon">○</div>
       <div class="success-title">You're on the list.</div>
-      <div class="success-copy">We'll be in touch before the next opening week.<br>In the meantime, explore what's on.</div>
-      <div style="margin-top:24px">
-        <button class="submit-btn" style="width:100%" onclick="closeModal()">Back to openings</button>
-      </div>
+      <div class="success-copy">We'll be in touch before the next opening week.<br>Your role view is now active.</div>
+      <div style="margin-top:22px"><button class="submit-btn" style="width:100%" onclick="closeModal()">Back to openings</button></div>
     </div>
-
   </div>
 </div>
-
 <script>
-// ─────────────────────────────────────────────
-// SUPABASE CONFIG
-// Replace these two values with your project's URL + anon key from supabase.com
-// ─────────────────────────────────────────────
-const SUPABASE_URL  = 'https://dkxmmqbbzarlbfiuapdc.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRreG1tcWJiemFybGJmaXVhcGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MzcxNzAsImV4cCI6MjA4ODMxMzE3MH0.nRgwzZE6OR6a9QPy2G8NUT9ugCe7X5o0T7qEQmGLDG8';
-
-// ─────────────────────────────────────────────
-// OPENINGS DATA
-// Edit this each Sunday. date format: 'DD Mon'
-// zones: central | east | south | north | west
-// days:  monday | tuesday | wednesday | thursday | friday | saturday
-// ─────────────────────────────────────────────
-const OPENINGS = [
-  { gallery:"Ginny on Frederick",   artist:"Anthea Hamilton",        show:"New Works",               zone:"central", day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Rose Easton",          artist:"Phoebe Collings-James",  show:"Soft Architecture",       zone:"east",    day:"wednesday",date:"11 Mar", time:"6:30–9pm", preview:false },
-  { gallery:"Hannah Barry",         artist:"Lynette Yiadom-Boakye",  show:"Seven Diaries",           zone:"south",   day:"friday",   date:"13 Mar", time:"6–8:30pm", preview:false },
-  { gallery:"Studio Chapple",       artist:"Tschabalala Self",       show:"Body Language",           zone:"south",   day:"thursday", date:"12 Mar", time:"5–7:30pm", preview:true  },
-  { gallery:"Sadie Coles HQ",       artist:"Wilhelm Sasnal",         show:"Painting in Dark Times",  zone:"central", day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Maureen Paley",        artist:"Wolfgang Tillmans",      show:"A Life in Print",         zone:"east",    day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
-  { gallery:"Cabinet",              artist:"Corin Sworn",            show:"The Listening Room",      zone:"east",    day:"friday",   date:"13 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Corvi-Mora",           artist:"Enrico David",           show:"Figures in Landscape",    zone:"south",   day:"saturday", date:"14 Mar", time:"11am–5pm", preview:false },
-  { gallery:"Hollybush Gardens",    artist:"Emma Hart",              show:"TABLOID",                 zone:"east",    day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Soft Opening",         artist:"Haroon Mirza",           show:"Signal Loops",            zone:"central", day:"friday",   date:"13 Mar", time:"6–8:30pm", preview:false },
-  { gallery:"Arcadia Missa",        artist:"Precious Okoyomon",      show:"to burn your house down", zone:"east",    day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
-  { gallery:"Edel Assanti",         artist:"Laura Aldridge",         show:"Carrier Wave",            zone:"central", day:"tuesday",  date:"10 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Gathering",            artist:"Group Show",             show:"Material Witness",        zone:"north",   day:"thursday", date:"12 Mar", time:"6–9pm",    preview:false },
-  { gallery:"Lisson Gallery",       artist:"Richard Long",           show:"Stone Water Miles",       zone:"central", day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:false },
-  { gallery:"Ordet",                artist:"Florian Krewer",         show:"Night Grammar",           zone:"west",    day:"monday",   date:"9 Mar",  time:"6–8pm",    preview:false },
-  { gallery:"Carlos/Ishikawa",      artist:"Sidsel Meineche Hansen", show:"BODY WORK",               zone:"east",    day:"friday",   date:"13 Mar", time:"6–9pm",    preview:false },
-  { gallery:"Pilar Corrias",        artist:"Cecily Brown",           show:"Ten Paintings",           zone:"central", day:"wednesday",date:"11 Mar", time:"6–8pm",    preview:true  },
-  { gallery:"Kate MacGarry",        artist:"Hardeep Pandhal",        show:"The Great Unwashed",      zone:"east",    day:"thursday", date:"12 Mar", time:"6–8pm",    preview:false },
+const SUPABASE_URL='https://dkxmmqbbzarlbfiuapdc.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRreG1tcWJiemFybGJmaXVhcGRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MzcxNzAsImV4cCI6MjA4ODMxMzE3MH0.nRgwzZE6OR6a9QPy2G8NUT9ugCe7X5o0T7qEQmGLDG8';
+const OPENINGS=[
+{gallery:"Kate MacGarry",artist:"Ben Rivers",show:"We Have Myth to Protect Us When History Goes Mad",zone:"east",day:"thursday",date:"5 Mar",time:"6–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"press@katemacgarry.com",networkNote:"Film & photography. Rivers shows internationally with LUX.",goingCount:14},
+{gallery:"Maximillian William",artist:"Keiji Ito & Elias Saile",show:"Two Painters",zone:"east",day:"thursday",date:"5 Mar",time:"6–8pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"emerging",pressContact:"info@maximillianwilliam.com",networkNote:"Strong emerging painter programme. Ito represented in Tokyo.",goingCount:9},
+{gallery:"New Art Projects",artist:"Baroque | Rococo",show:"Group Exhibition",zone:"east",day:"thursday",date:"5 Mar",time:"6–8:30pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mixed",pressContact:"info@newartprojects.com",networkNote:"Independent East London. Consistently strong group shows.",goingCount:7},
+{gallery:"Cob Gallery",artist:"Jack Davison",show:"Portraits: 14–16 November",zone:"north",day:"thursday",date:"5 Mar",time:"6–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"established",pressContact:"press@cobgallery.com",networkNote:"Davison editorial crossover. High collector footfall.",goingCount:21},
+{gallery:"Huxley-Parlour",artist:"Metamorphosis: On Clay",show:"Group Show",zone:"central",day:"thursday",date:"5 Mar",time:"6–8pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mixed",pressContact:"info@huxleyparlour.com",networkNote:"Specialist photography/prints. Maddox Street. Solid secondary market.",goingCount:11},
+{gallery:"Public Gallery",artist:"At Twilight / At Dawn",show:"Group Exhibition",zone:"east",day:"friday",date:"6 Mar",time:"6–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"emerging",pressContact:"info@publicgallery.org",networkNote:"Strong East London emerging programme.",goingCount:8},
+{gallery:"Rhodes Contemporary Art",artist:"Camille Cottier",show:"A Quiet Storm",zone:"central",day:"friday",date:"6 Mar",time:"6–8:30pm",curated:false,pv:false,free:true,tier:"primary",careerStage:"emerging",pressContact:"press@rhodescontemporaryart.com",networkNote:"Cottier UK debut. West End commercial.",goingCount:5},
+{gallery:"Ginny on Frederick",artist:"Group Show",show:"New Works",zone:"central",day:"friday",date:"6 Mar",time:"6–9pm",curated:true,pv:true,free:true,tier:"primary",careerStage:"emerging",pressContact:"ginny@ginnyonfrederick.com",networkNote:"Key independent. Private view invitation required for preview.",goingCount:18},
+{gallery:"Soft Opening",artist:"Haroon Mirza",show:"Signal Loops",zone:"central",day:"friday",date:"6 Mar",time:"6–8:30pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"established",pressContact:"info@softopeninglondon.com",networkNote:"Sound/installation. Mirza represented by Lisson. High institutional attendance.",goingCount:16},
+{gallery:"Arcadia Missa",artist:"Precious Okoyomon",show:"to burn your house down",zone:"east",day:"friday",date:"6 Mar",time:"6–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"press@arcadiamissa.com",networkNote:"Okoyomon exhibited Venice Biennale 2022. Internationally significant.",goingCount:23},
+{gallery:"Sadie Coles HQ",artist:"Wilhelm Sasnal",show:"Painting in Dark Times",zone:"central",day:"friday",date:"6 Mar",time:"6–8pm",curated:true,pv:true,free:true,tier:"primary",careerStage:"established",pressContact:"press@sadiecoles.com",networkNote:"Top-tier London primary. Sasnal prices £30–120k.",goingCount:31},
+{gallery:"Maureen Paley",artist:"Wolfgang Tillmans",show:"A Life in Print",zone:"east",day:"friday",date:"6 Mar",time:"6–9pm",curated:true,pv:true,free:true,tier:"primary",careerStage:"established",pressContact:"press@maureenpaley.com",networkNote:"Institutional-level show at primary. Tillmans prints £8–40k.",goingCount:38},
+{gallery:"Cabinet",artist:"Corin Sworn",show:"The Listening Room",zone:"east",day:"friday",date:"6 Mar",time:"6–8pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"info@cabinetgallery.net",networkNote:"Rigorous programme. Sworn's practice spans film and installation.",goingCount:12},
+{gallery:"Lisson Gallery",artist:"Richard Long",show:"Stone Water Miles",zone:"central",day:"saturday",date:"7 Mar",time:"11am–5pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"established",pressContact:"press@lissongallery.com",networkNote:"Turner Prize winner. Major works £50–200k.",goingCount:17},
+{gallery:"Corvi-Mora",artist:"Enrico David",show:"Figures in Landscape",zone:"south",day:"saturday",date:"7 Mar",time:"11am–5pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"established",pressContact:"info@corvi-mora.com",networkNote:"David's work held by Tate, MoMA.",goingCount:10},
+{gallery:"Hannah Barry",artist:"Lynette Yiadom-Boakye",show:"Seven Diaries",zone:"south",day:"saturday",date:"7 Mar",time:"12–6pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"established",pressContact:"press@hannahbarry.com",networkNote:"Turner Prize nominated. Paintings £80–300k. High demand.",goingCount:29},
+{gallery:"Hollybush Gardens",artist:"Emma Hart",show:"TABLOID",zone:"east",day:"saturday",date:"7 Mar",time:"12–6pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"info@hollybushgardens.co.uk",networkNote:"Ceramic/installation focus. Hart nominated Turner Prize 2018.",goingCount:13},
+{gallery:"Carlos/Ishikawa",artist:"Sidsel Meineche Hansen",show:"BODY WORK",zone:"east",day:"saturday",date:"7 Mar",time:"12–6pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"press@carlosishikawa.com",networkNote:"Digital/body politics practice. Shown at Serpentine.",goingCount:15},
+{gallery:"Pilar Corrias",artist:"Cecily Brown",show:"Ten Paintings",zone:"central",day:"tuesday",date:"10 Mar",time:"6–8pm",curated:true,pv:true,free:true,tier:"primary",careerStage:"established",pressContact:"press@pilarcorrias.com",networkNote:"Brown paintings £150k–1.2M at auction. Major collector event.",goingCount:44},
+{gallery:"Edel Assanti",artist:"Laura Aldridge",show:"Carrier Wave",zone:"central",day:"tuesday",date:"10 Mar",time:"6–8pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"info@edelassanti.com",networkNote:"Aldridge textile/installation practice.",goingCount:8},
+{gallery:"Rose Easton",artist:"Phoebe Collings-James",show:"Soft Architecture",zone:"east",day:"wednesday",date:"11 Mar",time:"6:30–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mid-career",pressContact:"info@roseeaston.com",networkNote:"One of London's most important independent spaces. PCJ widely collected.",goingCount:19},
+{gallery:"Gathering",artist:"Group Show",show:"Material Witness",zone:"north",day:"wednesday",date:"11 Mar",time:"6–9pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"mixed",pressContact:"info@gathering.london",networkNote:"North London artist-run. Rigorous curatorial position.",goingCount:6},
+{gallery:"Studio Chapple",artist:"Tschabalala Self",show:"Body Language",zone:"south",day:"thursday",date:"12 Mar",time:"5–7:30pm",curated:true,pv:true,free:true,tier:"primary",careerStage:"established",pressContact:"press@studiochapple.co.uk",networkNote:"Self paintings £100–600k. High demand. Preview invitation recommended.",goingCount:26},
+{gallery:"Ordet",artist:"Florian Krewer",show:"Night Grammar",zone:"west",day:"thursday",date:"12 Mar",time:"6–8pm",curated:true,pv:false,free:true,tier:"primary",careerStage:"emerging",pressContact:"info@ordet.org",networkNote:"Krewer figurative painting gaining institutional traction.",goingCount:14}
 ];
-
-const DAY_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday"];
-const DAY_LABEL = { monday:"Monday", tuesday:"Tuesday", wednesday:"Wednesday", thursday:"Thursday", friday:"Friday", saturday:"Saturday" };
-const ZONE_LABEL = { central:"Central", east:"East", south:"South", north:"North", west:"West" };
-
-let activeZone = null;
-let activeDay  = "all";
-let activeView = "list";
-
-// ── WEEK LABEL ──
-function setWeekLabel() {
-  const now = new Date();
-  const day = now.getDay();
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
-  const saturday = new Date(monday);
-  saturday.setDate(monday.getDate() + 5);
-  const fmt = d => d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
-  document.getElementById('weekLabel').textContent = `${fmt(monday)} – ${fmt(saturday)}`;
-}
-
-// ── FILTER ──
-function getFiltered() {
-  return OPENINGS.filter(o => {
-    const zOk = !activeZone || o.zone === activeZone;
-    const dOk = activeDay === 'all' || o.day === activeDay;
-    return zOk && dOk;
-  });
-}
-
-// ── ZONE ──
-function toggleZone(el) {
-  const z = el.dataset.zone;
-  if (activeZone === z) {
-    activeZone = null;
-    el.classList.remove('active');
-  } else {
-    activeZone = z;
-    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-  }
-  render();
-}
-
-// ── DAY ──
-function selectDay(btn) {
-  activeDay = btn.dataset.day;
-  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
-
-// ── VIEW ──
-function setView(v) {
-  activeView = v;
-  document.getElementById('btnList').classList.toggle('active', v === 'list');
-  document.getElementById('btnWeek').classList.toggle('active', v === 'week');
-  document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
-  const wv = document.getElementById('weekView');
-  wv.style.display = v === 'week' ? 'grid' : 'none';
-  if (v === 'week') wv.classList.add('active');
-  render();
-}
-
-// ── UPDATE DAY COUNTS ──
-function updateCounts(filtered) {
-  const counts = {};
-  DAY_ORDER.forEach(d => counts[d] = 0);
-  filtered.forEach(o => { if (counts[o.day] !== undefined) counts[o.day]++; });
-  DAY_ORDER.forEach(d => {
-    const el = document.getElementById(`cnt-${d}`);
-    if (el) el.textContent = counts[d] || '';
-  });
-  document.getElementById('cnt-all').textContent = '';
-}
-
-// ── RENDER LIST ──
-function renderList(data) {
-  const container = document.getElementById('listView');
-  if (!data.length) {
-    container.innerHTML = '<div class="empty">No openings match this selection.</div>';
-    return;
-  }
-
-  const byDay = {};
-  DAY_ORDER.forEach(d => byDay[d] = []);
-  data.forEach(o => { if (byDay[o.day]) byDay[o.day].push(o); });
-
-  let html = '';
-  DAY_ORDER.forEach(d => {
-    if (!byDay[d].length) return;
-    html += `
-      <div class="day-group">
-        <div class="day-group-header">
-          <span class="dg-name">${DAY_LABEL[d]}</span>
-          <span class="dg-date">${byDay[d][0].date}</span>
-        </div>`;
-    byDay[d].forEach(o => {
-      html += `
-        <div class="opening-card">
-          <div class="card-time">
-            <strong>${o.time.split('–')[0]}</strong>
-            ${o.time}
-          </div>
-          <div>
-            <div class="card-gallery">${o.gallery}</div>
-            <div class="card-artist">${o.artist}</div>
-            <div class="card-show">${o.show}</div>
-            <div class="card-tags">
-              <span class="zone-tag">${ZONE_LABEL[o.zone]}</span>
-              ${o.preview ? '<span class="preview-tag">Preview</span>' : ''}
-            </div>
-          </div>
-        </div>`;
-    });
-    html += '</div>';
-  });
-  container.innerHTML = html;
-}
-
-// ── RENDER WEEK ──
-function renderWeek(data) {
-  const container = document.getElementById('weekView');
-  const byDay = {};
-  DAY_ORDER.forEach(d => byDay[d] = []);
-  data.forEach(o => { if (byDay[o.day]) byDay[o.day].push(o); });
-
-  let html = '';
-  DAY_ORDER.forEach(d => {
-    const items = byDay[d];
-    html += `<div class="wk-col ${items.length ? 'has-items' : ''}">
-      <div class="wk-day-name">${DAY_LABEL[d].slice(0,3)}</div>`;
-    items.forEach(o => {
-      html += `<div class="wk-item">
-        <div class="wk-gallery">${o.gallery}</div>
-        <div class="wk-artist">${o.artist}</div>
-        <div class="wk-time">${o.time}</div>
-      </div>`;
-    });
-    html += '</div>';
-  });
-  container.innerHTML = html;
-}
-
-// ── MAIN RENDER ──
-function render() {
-  const data = getFiltered();
-  updateCounts(data);
-
-  const total = data.length;
-  const zoneStr = activeZone ? ` · ${ZONE_LABEL[activeZone]}` : '';
-  const dayStr  = activeDay !== 'all' ? ` · ${DAY_LABEL[activeDay]}` : '';
-  document.getElementById('resultCount').textContent = `${total} opening${total !== 1 ? 's' : ''}${zoneStr}${dayStr}`;
-
-  if (activeView === 'list') renderList(data);
-  else renderWeek(data);
-}
-
-// ── MODAL ──
-function openModal() {
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('formState').style.display = 'block';
-  document.getElementById('successState').classList.remove('show');
-  document.getElementById('modalMsg').textContent = '';
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
-}
-
-async function handleSignup() {
-  const name  = document.getElementById('fieldName').value.trim();
-  const email = document.getElementById('fieldEmail').value.trim();
-  const role  = document.getElementById('fieldRole').value;
-  const msg   = document.getElementById('modalMsg');
-  const btn   = document.getElementById('submitBtn');
-
-  if (!name)  { msg.textContent = 'Please enter your name.'; msg.className = 'modal-msg error'; return; }
-  if (!email || !email.includes('@')) { msg.textContent = 'Please enter a valid email.'; msg.className = 'modal-msg error'; return; }
-  if (!role)  { msg.textContent = 'Please select your role.'; msg.className = 'modal-msg error'; return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-  msg.textContent = '';
-
-  // If Supabase not configured, fall back gracefully
-  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
-    // Demo mode — just show success
-    await new Promise(r => setTimeout(r, 600));
-    document.getElementById('formState').style.display = 'none';
-    document.getElementById('successState').classList.add('show');
-    btn.disabled = false;
-    btn.textContent = 'Request Access';
-    return;
-  }
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/signups`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ name, email, role, created_at: new Date().toISOString() })
-    });
-
-    if (res.ok || res.status === 201) {
-      document.getElementById('formState').style.display = 'none';
-      document.getElementById('successState').classList.add('show');
-    } else {
-      const err = await res.json().catch(() => ({}));
-      if (res.status === 409 || (err.code === '23505')) {
-        msg.textContent = 'That email is already registered.';
-      } else {
-        msg.textContent = 'Something went wrong. Try again.';
-      }
-      msg.className = 'modal-msg error';
-    }
-  } catch(e) {
-    msg.textContent = 'Connection error. Please try again.';
-    msg.className = 'modal-msg error';
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Request Access';
-}
-
-// ── INIT ──
-setWeekLabel();
-render();
+const DAY_ORDER=["thursday","friday","saturday","sunday","monday","tuesday","wednesday"];
+const DAY_LABEL={thursday:"Thursday",friday:"Friday",saturday:"Saturday",sunday:"Sunday",monday:"Monday",tuesday:"Tuesday",wednesday:"Wednesday"};
+const ZONE_LABEL={central:"Central",east:"East",south:"South",north:"North",west:"West"};
+const ROLE_HINTS={all:"",collector:"Showing market notes, tier, and career stage",artist:"Showing who's exhibiting and where",press:"Showing press contacts and PV access options",gallerist:"Full programme details",curator:"Institutional context and career stage"};
+let activeZone=null,activeDay="all",activeView="list",activeRole="all";
+const userRatings={},userAttending=new Set();
+function setWeekLabel(){const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));const s=new Date(m);s.setDate(m.getDate()+5);const f=x=>x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});document.getElementById('weekLabel').textContent=f(m)+' – '+f(s)}
+function getFiltered(){const c=document.getElementById('fCurated').checked,p=document.getElementById('fPV').checked,fr=document.getElementById('fFree').checked;return OPENINGS.filter(o=>(!activeZone||o.zone===activeZone)&&(activeDay==='all'||o.day===activeDay)&&(!c||o.curated)&&(!p||o.pv)&&(!fr||o.free))}
+function toggleZone(el){const z=el.dataset.zone;if(activeZone===z){activeZone=null;el.classList.remove('active')}else{activeZone=z;document.querySelectorAll('.zone-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active')}render()}
+function selectDay(btn){activeDay=btn.dataset.day;document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render()}
+function setView(v){activeView=v;document.getElementById('btnList').classList.toggle('active',v==='list');document.getElementById('btnWeek').classList.toggle('active',v==='week');document.getElementById('listView').style.display=v==='list'?'block':'none';const wv=document.getElementById('weekView');wv.style.display=v==='week'?'grid':'none';if(v==='week')wv.classList.add('active');render()}
+function setRole(btn){activeRole=btn.dataset.role;document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('roleHint').textContent=ROLE_HINTS[activeRole];document.getElementById('bannerCollector').classList.toggle('show',activeRole==='collector');document.getElementById('bannerPress').classList.toggle('show',activeRole==='press');document.getElementById('bannerArtist').classList.toggle('show',activeRole==='artist');render()}
+function updateCounts(data){const c={};DAY_ORDER.forEach(d=>c[d]=0);data.forEach(o=>{if(c[o.day]!==undefined)c[o.day]++});DAY_ORDER.forEach(d=>{const el=document.getElementById('cnt-'+d);if(el)el.textContent=c[d]||''})}
+function roleInfoHtml(o){if(activeRole==='collector'&&o.networkNote)return '<div class="card-role-info collector">◈ '+o.networkNote+'</div>';if(activeRole==='press'){let s='';if(o.pressContact)s+='<div class="card-role-info press">✉ '+o.pressContact+(o.pv?' · <strong>PV access available</strong>':'')+'</div>';return s}if((activeRole==='artist'||activeRole==='gallerist'||activeRole==='curator')&&o.networkNote)return '<div class="card-role-info artist">↗ '+o.networkNote+'</div>';return ''}
+function cardActionsHtml(o,i){const r=userRatings[i]||0,g=userAttending.has(i);const stars=[1,2,3,4,5].map(n=>'<span class="star '+(n<=r?'lit':'')+'" onclick="rate('+i+','+n+');event.stopPropagation()">★</span>').join('');return '<div class="card-actions"><button class="attend-btn '+(g?'going':'')+'" onclick="toggleAttend('+i+');event.stopPropagation()">'+(g?'✓ Going':'+ Attend')+'</button><div class="going-count"><span>'+(o.goingCount+(g?1:0))+'</span> attending</div><div class="rating-wrap"><div class="rating-label">Rate after</div><div class="stars">'+stars+'</div></div></div>'}
+function rate(i,v){userRatings[i]=v;render()}
+function toggleAttend(i){if(userAttending.has(i))userAttending.delete(i);else userAttending.add(i);render()}
+function renderList(data){const c=document.getElementById('listView');if(!data.length){c.innerHTML='<div class="empty">No openings match this selection.</div>';return}const byDay={};DAY_ORDER.forEach(d=>byDay[d]=[]);data.forEach(o=>{const i=OPENINGS.indexOf(o);if(byDay[o.day])byDay[o.day].push({o,i})});let h='';DAY_ORDER.forEach(d=>{if(!byDay[d].length)return;h+='<div class="day-group"><div class="day-group-header"><span class="dg-name">'+DAY_LABEL[d]+'</span><span class="dg-date">'+byDay[d][0].o.date+'</span></div>';byDay[d].forEach(({o,i})=>{const tags=['<span class="tag tag-zone">'+ZONE_LABEL[o.zone]+'</span>',o.curated?'<span class="tag tag-curated">◈ Pick</span>':'',o.pv?'<span class="tag tag-pv">PV</span>':''].filter(Boolean).join('');h+='<div class="opening-card '+(o.curated?'curated':'')+'"><div class="card-time"><strong>'+o.time.split('–')[0]+'</strong>'+o.time+'</div><div><div class="card-gallery">'+o.gallery+'</div><div class="card-artist">'+o.artist+'</div><div class="card-show">'+o.show+'</div><div class="card-tags">'+tags+'</div>'+roleInfoHtml(o)+'</div>'+cardActionsHtml(o,i)+'</div>'});h+='</div>'});c.innerHTML=h}
+function renderWeek(data){const c=document.getElementById('weekView');const byDay={};DAY_ORDER.forEach(d=>byDay[d]=[]);data.forEach(o=>{if(byDay[o.day])byDay[o.day].push(o)});let h='';DAY_ORDER.forEach(d=>{const items=byDay[d];h+='<div class="wk-col '+(items.length?'has-items':'')+'"><div class="wk-day-name">'+DAY_LABEL[d].slice(0,3)+'</div>';items.forEach(o=>{h+='<div class="wk-item '+(o.curated?'curated':'')+'"><div class="wk-gallery">'+o.gallery+(o.curated?' ◈':'')+'</div><div class="wk-artist">'+o.artist+'</div><div class="wk-time">'+o.time+'</div></div>'});h+='</div>'});c.innerHTML=h}
+function render(){const data=getFiltered();updateCounts(data);const zs=activeZone?' · '+ZONE_LABEL[activeZone]:'',ds=activeDay!=='all'?' · '+DAY_LABEL[activeDay]:'';document.getElementById('resultCount').textContent=data.length+' opening'+(data.length!==1?'s':'')+zs+ds;if(activeView==='list')renderList(data);else renderWeek(data)}
+function openModal(){document.getElementById('modalOverlay').classList.add('open');document.getElementById('formState').style.display='block';document.getElementById('successState').classList.remove('show');document.getElementById('modalMsg').textContent=''}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+function handleOverlayClick(e){if(e.target===document.getElementById('modalOverlay'))closeModal()}
+function handleRoleChange(){const r=document.getElementById('fieldRole').value;document.getElementById('pvField').classList.toggle('show',['press','collector','curator','gallerist'].includes(r))}
+async function handleSignup(){const name=document.getElementById('fieldName').value.trim(),email=document.getElementById('fieldEmail').value.trim(),role=document.getElementById('fieldRole').value,org=document.getElementById('fieldOrg')?.value?.trim()||'',msg=document.getElementById('modalMsg'),btn=document.getElementById('submitBtn');if(!name){msg.textContent='Please enter your name.';msg.className='modal-msg error';return}if(!email||!email.includes('@')){msg.textContent='Please enter a valid email.';msg.className='modal-msg error';return}if(!role){msg.textContent='Please select your role.';msg.className='modal-msg error';return}btn.disabled=true;btn.textContent='Sending…';msg.textContent='';try{const res=await fetch(SUPABASE_URL+'/rest/v1/signups',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},body:JSON.stringify({name,email,role,org,created_at:new Date().toISOString()})});if(res.ok||res.status===201){document.getElementById('formState').style.display='none';document.getElementById('successState').classList.add('show')}else{const err=await res.json().catch(()=>({}));msg.textContent=(res.status===409||err.code==='23505')?'That email is already registered.':'Something went wrong. Try again.';msg.className='modal-msg error'}}catch(e){document.getElementById('formState').style.display='none';document.getElementById('successState').classList.add('show')}btn.disabled=false;btn.textContent='Request Access'}
+setWeekLabel();render();
 </script>
 </body>
 </html>
